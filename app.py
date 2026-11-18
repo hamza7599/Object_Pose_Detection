@@ -357,7 +357,7 @@ with tab_pose:
 
   pose_input_mode = st.radio(
       "Select Input Source for Pose Estimation:",
-      options=[" Real-Time Camera", " Picture Upload", " Video Upload"],
+      options=["Real-Time Camera", "Picture Upload", "Video Upload"],
       horizontal=True,
       key="radio_pose",
   )
@@ -420,7 +420,7 @@ with tab_pose:
           res_rgb = cv2.cvtColor(res_plotted, cv2.COLOR_BGR2RGB)
           st.image(res_rgb, width="stretch")
 
-  elif pose_input_mode == " Video Upload":
+  elif pose_input_mode == "Video Upload":
     uploaded_pose_vid = st.file_uploader(
         "Upload a video file (MP4, AVI, MOV)",
         type=["mp4", "avi", "mov"],
