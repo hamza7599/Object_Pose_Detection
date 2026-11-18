@@ -268,7 +268,7 @@ with tab_detection:
       col1, col2 = st.columns(2)
       with col1:
         st.markdown("##### Original Image")
-        st.image(image, use_container_width=True)
+        st.image(image, width="stretch")
 
       with col2:
         st.markdown("##### YOLOv8 Detection Result")
@@ -279,7 +279,7 @@ with tab_detection:
           res_plotted = results[0].plot()
           # Convert BGR (OpenCV) to RGB (Streamlit)
           res_rgb = cv2.cvtColor(res_plotted, cv2.COLOR_BGR2RGB)
-          st.image(res_rgb, use_container_width=True)
+          st.image(res_rgb, width="stretch")
 
   elif det_input_mode == "Video Upload":
     uploaded_vid = st.file_uploader(
@@ -410,7 +410,7 @@ with tab_pose:
       col1, col2 = st.columns(2)
       with col1:
         st.markdown("##### Original Image")
-        st.image(image, use_container_width=True)
+        st.image(image, width="stretch")
 
       with col2:
         st.markdown("##### YOLOv8 Pose Estimation Result")
@@ -418,7 +418,7 @@ with tab_pose:
           results = pose_model(img_np, conf=conf_threshold, verbose=False)
           res_plotted = results[0].plot()
           res_rgb = cv2.cvtColor(res_plotted, cv2.COLOR_BGR2RGB)
-          st.image(res_rgb, use_container_width=True)
+          st.image(res_rgb, width="stretch")
 
   elif pose_input_mode == " Video Upload":
     uploaded_pose_vid = st.file_uploader(
