@@ -4,7 +4,7 @@ import cv2
 import numpy as np
 from PIL import Image
 import streamlit as st
-from streamlit_webrtc import RTCConfiguration, webrtc_streamer
+from streamlit_webrtc import RTCConfiguration, webrtc_streamer,WebRtcMode
 from ultralytics import YOLO
 
 # ---------------------------------------------------------
@@ -236,6 +236,7 @@ with tab_detection:
 
       webrtc_streamer(
           key="webrtc_det",
+          mode=WebRtcMode.SENDRECV,
           rtc_configuration=RTC_CONFIGURATION,
           video_frame_callback=det_frame_callback,
           media_stream_constraints={"video": True, "audio": False},
@@ -378,6 +379,7 @@ with tab_pose:
 
       webrtc_streamer(
           key="webrtc_pose",
+          mode=WebRtcMode.SENDRECV,
           rtc_configuration=RTC_CONFIGURATION,
           video_frame_callback=pose_frame_callback,
           media_stream_constraints={"video": True, "audio": False},
