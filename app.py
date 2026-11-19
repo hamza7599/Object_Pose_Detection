@@ -1,10 +1,8 @@
 import tempfile
-import av
 import cv2
 import numpy as np
 from PIL import Image
 import streamlit as st
-from streamlit_webrtc import RTCConfiguration, webrtc_streamer,WebRtcMode
 from ultralytics import YOLO
 
 # ---------------------------------------------------------
@@ -148,10 +146,6 @@ def load_pose_model():
 det_model = load_detection_model()
 pose_model = load_pose_model()
 
-# WebRTC STUN Server Config
-RTC_CONFIGURATION = RTCConfiguration(
-    {"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]}
-)
 
 # ---------------------------------------------------------
 # 4. SIDEBAR CONTROLS
@@ -183,7 +177,7 @@ st.markdown(
 <div class="hero-banner">
     <div class="hero-title">VisionAI Multi-Modal Studio</div>
     <div class="hero-subtitle">
-        Real-time YOLO Detection Portal for <b>Car & Person Detection</b> and <b>Human Pose Estimation</b> across Live Camera, Images, and Video Streams.
+        Real-time YOLO Detection Portal for <b>Car & Person Detection</b> and <b>Human Pose Estimation</b> across Images and Video Streams.
     </div>
 </div>
 """,
@@ -194,7 +188,7 @@ st.markdown(
 # 6. TWO MAIN SECTIONS (TABS)
 # ---------------------------------------------------------
 tab_detection, tab_pose = st.tabs(
-    ["Object Detection (Cars & Persons)", " Person Pose Detection"]
+    ["Object Detection (Cars & Persons)", "Person Pose Detection"]
 )
 
 
@@ -212,50 +206,14 @@ with tab_detection:
 
   det_input_mode = st.radio(
       "Select Input Source for Object Detection:",
-      options=["Real-Time Camera", "Picture Upload", "Video Upload"],
+      options=["Picture Upload", "Video Upload"],
       horizontal=True,
       key="radio_det",
   )
 
   st.markdown("<br>", unsafe_allow_html=True)
 
-  if det_input_mode == "Real-Time Camera":
-    col1, col2 = st.columns([2, 1])
-    with col1:
-      st.markdown("#### Live Browser Webcam Object Detection")
-
-      # Video callback for real-time WebRTC inference
-      def det_frame_callback(frame: av.VideoFrame) -> av.VideoFrame:
-        img = frame.to_ndarray(format="bgr24")
-        # Run YOLOv8 detection filtering for person (0) and car (2)
-        results = det_model(
-            img, conf=conf_threshold, classes=[0, 2], verbose=False
-        )
-        annotated_img = results[0].plot()
-        return av.VideoFrame.from_ndarray(annotated_img, format="bgr24")
-
-      webrtc_streamer(
-          key="webrtc_det",
-          mode=WebRtcMode.SENDRECV,
-          rtc_configuration=RTC_CONFIGURATION,
-          video_frame_callback=det_frame_callback,
-          media_stream_constraints={"video": True, "audio": False},
-          async_processing=True,
-      )
-    with col2:
-      st.markdown(
-          """
-            <div class="section-card">
-                <h4 style="color:#e2e8f0; margin-top:0;">⚡ Live Inference</h4>
-                <p style="font-size:0.9rem; color:#94a3b8;">
-                    Click <b>START</b> to activate your camera. YOLOv8n will instantly annotate cars and people in real time.
-                </p>
-            </div>
-            """,
-          unsafe_allow_html=True,
-      )
-
-  elif det_input_mode == "Picture Upload":
+  if det_input_mode == "Picture Upload":
     uploaded_img = st.file_uploader(
         "Upload an image (JPG, JPEG, PNG)",
         type=["jpg", "jpeg", "png"],
@@ -358,47 +316,14 @@ with tab_pose:
 
   pose_input_mode = st.radio(
       "Select Input Source for Pose Estimation:",
-      options=["Real-Time Camera", "Picture Upload", "Video Upload"],
+      options=["Picture Upload", "Video Upload"],
       horizontal=True,
       key="radio_pose",
   )
 
   st.markdown("<br>", unsafe_allow_html=True)
 
-  if pose_input_mode == "Real-Time Camera":
-    col1, col2 = st.columns([2, 1])
-    with col1:
-      st.markdown("#### Live Browser Webcam Pose Estimation")
-
-      def pose_frame_callback(frame: av.VideoFrame) -> av.VideoFrame:
-        img = frame.to_ndarray(format="bgr24")
-        # Run YOLOv8 pose estimation
-        results = pose_model(img, conf=conf_threshold, verbose=False)
-        annotated_img = results[0].plot()
-        return av.VideoFrame.from_ndarray(annotated_img, format="bgr24")
-
-      webrtc_streamer(
-          key="webrtc_pose",
-          mode=WebRtcMode.SENDRECV,
-          rtc_configuration=RTC_CONFIGURATION,
-          video_frame_callback=pose_frame_callback,
-          media_stream_constraints={"video": True, "audio": False},
-          async_processing=True,
-      )
-    with col2:
-      st.markdown(
-          """
-            <div class="section-card">
-                <h4 style="color:#e2e8f0; margin-top:0;">🏃 Skeletal Tracking</h4>
-                <p style="font-size:0.9rem; color:#94a3b8;">
-                    Click <b>START</b> to map joints and limbs live on your camera feed using `yolov8n-pose.pt`.
-                </p>
-            </div>
-            """,
-          unsafe_allow_html=True,
-      )
-
-  elif pose_input_mode == "Picture Upload":
+  if pose_input_mode == "Picture Upload":
     uploaded_pose_img = st.file_uploader(
         "Upload a person image (JPG, JPEG, PNG)",
         type=["jpg", "jpeg", "png"],
