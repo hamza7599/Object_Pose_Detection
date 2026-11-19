@@ -175,7 +175,7 @@ with st.sidebar:
 st.markdown(
     """
 <div class="hero-banner">
-    <div class="hero-title">VisionAI Multi-Modal Studio</div>
+    <div class="hero-title">Object and Pose Detection</div>
     <div class="hero-subtitle">
         Real-time YOLO Detection Portal for <b>Car & Person Detection</b> and <b>Human Pose Estimation</b> across Images and Video Streams.
     </div>
